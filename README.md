@@ -4,7 +4,9 @@
 
 An interactive 3D aerodynamics education game built with Three.js + React. Students learn core physics concepts (gravity, lift, drag, thrust, air pressure) by assembling and flying an airplane.
 
-![Game Preview](https://img.shields.io/badge/Tech-Three.js%20%2B%20React-blue) ![License](https://img.shields.io/badge/License-MIT-green)
+![Game Preview](https://img.shields.io/badge/Tech-Three.js%20%2B%20React-blue) ![License](https://img.shields.io/badge/License-MIT-green) [![在线体验](https://img.shields.io/badge/在线体验-GitHub%20Pages-22c55e)](https://wulifang332-afk.github.io/airplane-physics-game/)
+
+🌐 **在线体验**：https://wulifang332-afk.github.io/airplane-physics-game/
 
 ## 🎮 游戏流程
 
@@ -23,15 +25,15 @@ An interactive 3D aerodynamics education game built with Three.js + React. Stude
 - **Vite** — 构建工具
 - **Claude API** — AI 物理老师对话
 
-## 🚀 快速开始
-
 ## 🌐 在线访问
 
-项目已配置 GitHub Pages 自动部署。推送到 `main` 后，GitHub Actions 会构建 `dist/` 并发布到：
+项目已公开部署到 GitHub Pages：
 
-https://wulifang332-afk.github.io/airplane-physics-game/
+- [https://wulifang332-afk.github.io/airplane-physics-game/](https://wulifang332-afk.github.io/airplane-physics-game/)
 
-> 如果仓库仍是 Private，需要在 GitHub 仓库设置中启用 Pages，或将仓库/Pages 可见性调整为外部可访问。
+推送到 `main` 后，GitHub Actions 会自动构建 `dist/` 并发布最新版本。
+
+## 🚀 快速开始
 
 ### 1. 克隆项目
 
