@@ -253,11 +253,22 @@ export default function AirplanePhysicsGame() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sliderValue, setSliderValue] = useState(50);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches
+  );
   const chatEndRef = useRef(null);
 
   const phaseIndex = PHASES.findIndex((p) => p.id === phase);
   const isLearningPhase = ["gravity", "lift", "drag", "thrust", "pressure"].includes(phase);
   const currentKnowledge = isLearningPhase ? KNOWLEDGE[phase] : null;
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const handleChange = () => setIsMobile(media.matches);
+    handleChange();
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
+  }, []);
 
   /* ── Three.js Init ── */
   useEffect(() => {
@@ -686,34 +697,42 @@ ${systemContext || ""}
 
   return (
     <div style={{
-      width: "100%", height: "100vh", display: "flex", fontFamily: "'Noto Sans SC', 'Segoe UI', sans-serif",
+      width: "100%", height: "100vh", display: "flex", flexDirection: isMobile ? "column" : "row",
+      fontFamily: "'Noto Sans SC', 'Segoe UI', sans-serif",
       background: "linear-gradient(135deg, #020617 0%, #0a0f1e 50%, #0c1222 100%)", color: "#e2e8f0", overflow: "hidden"
     }}>
       {/* ── 3D Viewport ── */}
-      <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
+      <div style={{
+        flex: isMobile ? "0 0 58vh" : 1,
+        width: "100%",
+        minWidth: 0,
+        minHeight: isMobile ? 360 : 0,
+        position: "relative"
+      }}>
         <div ref={canvasRef} style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }} />
 
         {/* Top HUD */}
         <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, padding: "16px 20px",
+          position: "absolute", top: 0, left: 0, right: 0, padding: isMobile ? "10px 12px" : "16px 20px",
           background: "linear-gradient(180deg, rgba(2,6,23,0.9) 0%, transparent 100%)",
           display: "flex", alignItems: "center", gap: 8, zIndex: 10
         }}>
           <div style={{
-            fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "#38bdf8",
-            textTransform: "uppercase", fontFamily: "'Courier New', monospace"
+            fontSize: isMobile ? 11 : 13, fontWeight: 700, letterSpacing: isMobile ? 1 : 3, color: "#38bdf8",
+            textTransform: "uppercase", fontFamily: "'Courier New', monospace", whiteSpace: "nowrap"
           }}>
             ✈ 飞行物理实验室
           </div>
           <div style={{ flex: 1 }} />
           <div style={{
-            display: "flex", gap: 4, background: "rgba(15,23,42,0.8)", borderRadius: 8,
-            padding: "4px 8px", border: "1px solid rgba(56,189,248,0.15)"
+            display: "flex", gap: isMobile ? 2 : 4, background: "rgba(15,23,42,0.8)", borderRadius: 8,
+            padding: isMobile ? "4px 6px" : "4px 8px", border: "1px solid rgba(56,189,248,0.15)"
           }}>
             {PHASES.map((p, i) => (
               <div key={p.id} style={{
-                width: 28, height: 28, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, cursor: "pointer", transition: "all 0.3s",
+                width: isMobile ? 24 : 28, height: isMobile ? 24 : 28, borderRadius: 6,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: isMobile ? 12 : 13, cursor: "pointer", transition: "all 0.3s",
                 background: phase === p.id ? "rgba(56,189,248,0.3)" : i < phaseIndex ? "rgba(34,197,94,0.2)" : "transparent",
                 border: phase === p.id ? "1px solid #38bdf8" : i < phaseIndex ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(255,255,255,0.05)",
                 opacity: i <= phaseIndex ? 1 : 0.4
@@ -727,10 +746,13 @@ ${systemContext || ""}
         {/* Knowledge Card Overlay */}
         {isLearningPhase && currentKnowledge && (
           <div style={{
-            position: "absolute", bottom: 20, left: 20, width: 320,
+            position: "absolute", bottom: isMobile ? 12 : 20, left: isMobile ? 12 : 20,
+            width: isMobile ? "min(360px, calc(100% - 24px))" : 320,
+            maxHeight: isMobile ? "54%" : "none",
+            overflowY: isMobile ? "auto" : "visible",
             background: "rgba(15,23,42,0.92)", backdropFilter: "blur(12px)",
-            borderRadius: 16, border: `1px solid ${currentKnowledge.color}33`,
-            padding: 20, zIndex: 10
+            borderRadius: isMobile ? 12 : 16, border: `1px solid ${currentKnowledge.color}33`,
+            padding: isMobile ? 14 : 20, zIndex: 10
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
               <div style={{
@@ -803,7 +825,8 @@ ${systemContext || ""}
         {/* Assembly Panel */}
         {phase === "assembly" && (
           <div style={{
-            position: "absolute", bottom: 20, left: 20, right: "calc(360px + 40px)",
+            position: "absolute", bottom: isMobile ? 12 : 20, left: isMobile ? 12 : 20,
+            right: isMobile ? 12 : "calc(360px + 40px)",
             display: "flex", gap: 10, zIndex: 10, flexWrap: "wrap"
           }}>
             {PARTS.map((part) => {
@@ -830,7 +853,7 @@ ${systemContext || ""}
 
         {/* Flight Controls */}
         {phase === "flight" && (
-          <div style={{ position: "absolute", bottom: 20, left: 20, zIndex: 10 }}>
+          <div style={{ position: "absolute", bottom: isMobile ? 12 : 20, left: isMobile ? 12 : 20, zIndex: 10 }}>
             <button onClick={() => setIsFlying(!isFlying)} style={{
               padding: "14px 32px", borderRadius: 12, fontSize: 16, fontWeight: 700,
               background: isFlying ? "rgba(239,68,68,0.3)" : "linear-gradient(135deg, rgba(34,197,94,0.4), rgba(56,189,248,0.4))",
@@ -845,7 +868,8 @@ ${systemContext || ""}
 
         {/* Navigation */}
         <div style={{
-          position: "absolute", bottom: 20, right: 380, display: "flex", gap: 8, zIndex: 10,
+          position: "absolute", bottom: isMobile ? 12 : 20, right: isMobile ? 12 : 380,
+          display: "flex", gap: 8, zIndex: 10,
         }}>
           {phase === "intro" && (
             <button onClick={handleNextPhase} style={{
@@ -879,12 +903,17 @@ ${systemContext || ""}
 
       {/* ── AI Teacher Chat Panel ── */}
       <div style={{
-        width: 350, borderLeft: "1px solid rgba(56,189,248,0.1)", display: "flex", flexDirection: "column",
+        width: isMobile ? "100%" : 350,
+        flex: isMobile ? "1 1 42vh" : "0 0 350px",
+        minHeight: 0,
+        borderLeft: isMobile ? "none" : "1px solid rgba(56,189,248,0.1)",
+        borderTop: isMobile ? "1px solid rgba(56,189,248,0.1)" : "none",
+        display: "flex", flexDirection: "column",
         background: "rgba(8,12,28,0.95)", flexShrink: 0
       }}>
         {/* Header */}
         <div style={{
-          padding: "16px 20px", borderBottom: "1px solid rgba(56,189,248,0.1)",
+          padding: isMobile ? "10px 14px" : "16px 20px", borderBottom: "1px solid rgba(56,189,248,0.1)",
           display: "flex", alignItems: "center", gap: 10
         }}>
           <div style={{
@@ -909,7 +938,8 @@ ${systemContext || ""}
 
         {/* Messages */}
         <div style={{
-          flex: 1, overflowY: "auto", padding: "12px 16px", display: "flex", flexDirection: "column", gap: 10
+          flex: 1, minHeight: 0, overflowY: "auto", padding: isMobile ? "10px 14px" : "12px 16px",
+          display: "flex", flexDirection: "column", gap: 10
         }}>
           {messages.map((msg, i) => (
             <div key={i} style={{
@@ -945,7 +975,7 @@ ${systemContext || ""}
 
         {/* Input */}
         <div style={{
-          padding: "12px 16px", borderTop: "1px solid rgba(56,189,248,0.1)",
+          padding: isMobile ? "10px 14px" : "12px 16px", borderTop: "1px solid rgba(56,189,248,0.1)",
           display: "flex", gap: 8
         }}>
           <input value={inputText} onChange={(e) => setInputText(e.target.value)}

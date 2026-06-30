@@ -25,6 +25,14 @@ An interactive 3D aerodynamics education game built with Three.js + React. Stude
 
 ## 🚀 快速开始
 
+## 🌐 在线访问
+
+项目已配置 GitHub Pages 自动部署。推送到 `main` 后，GitHub Actions 会构建 `dist/` 并发布到：
+
+https://wulifang332-afk.github.io/airplane-physics-game/
+
+> 如果仓库仍是 Private，需要在 GitHub 仓库设置中启用 Pages，或将仓库/Pages 可见性调整为外部可访问。
+
 ### 1. 克隆项目
 
 ```bash
@@ -82,6 +90,18 @@ npm install express cors
 ```
 
 ## 📦 构建部署
+
+### GitHub Pages 自动部署
+
+本仓库包含 `.github/workflows/deploy.yml`。每次推送到 `main` 分支时会自动：
+
+1. 安装依赖
+2. 运行 `npm run build`
+3. 将 `dist/` 发布到 GitHub Pages
+
+Vite 在 GitHub Pages 构建时会使用 `/airplane-physics-game/` 作为资源路径，本地开发仍使用 `/`。
+
+### 本地构建
 
 ```bash
 npm run build     # 生成 dist/ 目录
